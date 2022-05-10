@@ -5,7 +5,7 @@ name: CI
 # Controls when the action will run. 
 on:
   push:
-    branches: [ 2022 ]
+    branches: [ 2022,  testing-design]
   pull_request:
     branches: [ 2022 ]
 

@@ -6,12 +6,249 @@ Add macOS and Windows tests.
 #### package.json
 The original "npm run test" script cannot be executed on Windows. We updated the script to make testing can be run on Windows.
 #### tests/integrated.test.ts
-Add 40 test cases for integration. Most of them are the combination of two features. Some of them possess functions that haven't been implemented(such as writing string to file), developers won't need to pass all of them.
+Added 40 test cases for integration and 20 error cases covering most of the error types in Python . Most of them are the combination of two features. Some of them possess functions that haven't been implemented(such as writing string to file), developers won't need to pass all of them.
 #### Todo
+Working on setting up Selenium
 Add more tests and automation testing for browsers.
 
-##  Integrated test cases
-Note : We will come up with more integrated test cases next week and make sure that the syntax of our test cases align with the design documents of other groups.  
+
+Browser test: For simplicity, we will use “python3 -m http.server” running in background to host the application for testing in Git Actions. Then, we will implement basic functions like assertPrint(), assertFail(), and assertRepr() with Selenium. With these functions, we can easily add browser test cases. Besides, we will pay more attention to browser testing for I/O considering that I/O can only be tested in the browser tests.
+
+
+###Tricky Code
+
+#1 Class , Iterators , Strings , Funcs
+```
+class Node:
+   def __init__(self:Node, dataval:str=None):
+      self.dataval = dataval
+      self.nextval = None
+
+class SLinkedList:
+   def __init__(self:SLinkedList):
+      self.headval = None
+   def listprint(self:SLinkedList):
+      printval : Node = self.headval
+      while printval is not None:
+         print(printval.dataval)
+         printval = printval.nextval
+   def AtBegining(self:SLinkedList,newdata:str):
+      NewNode : Node = Node(newdata)
+
+   NewNode.nextval = self.headval
+   self.headval = NewNode
+
+list : SLinkedList= SLinkedList()
+list.headval = Node("Mon")
+e2 : Node = Node("Tue")
+e3 : Node = Node("Wed")
+list.headval.nextval = e2
+e2.nextval = e3
+
+list.AtBegining("Sun")
+list.listprint()
+```
+Output
+```
+"Mon"
+"Tue"
+"Wed"
+```
+
+#2 Dictionary , Lists , Sets
+```
+diction : dict = { 'C1' : [10,20,30] ,'C2' : [20,30,40]}
+diction1 : dict = { 'C1' : (10,20,30) ,'C2' : (20,30,40)}
+print(diction['C1'][0])
+print(diction1['C2'][2])
+```
+Output
+```
+10
+40
+```
+#3 Retreiving from List of List and loops
+```
+A : list = [[10,20,30],[20,30,40]]
+sum : int = 0
+for i in range(0,len(A)):
+  for j in range(0,len(i)):
+    sum = sum + A[i][j]
+print(sum)
+```
+Output
+```
+150
+```
+#4 Strings and Lists - Retreiving chars from strings
+```
+A : list = ['abc','bcd','cde','efg','ghi','igh']
+print(A[0][1])
+```
+Output
+``` 
+b
+```
+
+#5 Strings and Error Reporting
+```
+def printMsg():
+  print("""This is 
+    a test""")
+printMsg()
+```
+Output
+```
+This is a test
+```
+
+#6 Polymorphism and Inheritence
+```
+class Shape:
+    def __init__(self:Shape, name:str):
+        self.name = name
+
+    def area(self:Shape):
+        pass
+
+    def fact(self:Shape):
+        return "I am a two-dimensional shape."
+
+    def __str__(self:Shape):
+        return self.name
+
+class Square(Shape):
+    def __init__(self:Square, length:int):
+        super().__init__("Square")
+        self.length = length
+
+    def area(self):
+        return pow(self.length,2)
+
+    def fact(self):
+        return "Squares have each angle equal to 90 degrees."
+
+class Circle(Shape):
+    def __init__(self:Circle, radius:int):
+        super().__init__("Circle")
+        self.radius = radius
+
+    def area(self):
+        return 3*self.radius**2
+		
+a : Square = Square(4)
+b : Circle = Circle(7)
+print(b.fact())
+print(a.fact())
+print(b.area())
+```
+Output
+```
+I am a two-dimensional shape.
+Squares have each angle equal to 90 degrees.
+147
+```
+#7 Destructuring Assignments and Lists
+```
+a: int = 0
+b: int = 0
+a , b = [0,1]
+print(a)
+print(b)
+```
+Output
+```
+0
+1
+```
+#8 Destructuring Assignments and Dictionary
+```
+diction : dict = {'x':10 , 'y':20}
+a:str = ''
+b:str = ''
+a , b = diction
+print(a)
+print(b)
+```
+Output
+```
+x
+y
+```
+
+#9 Input File , Lists and Iterators
+```
+data : list = []
+with open('the-zen-of-python.txt') as f:
+    line = f.readline()
+    while line:
+        line = f.readline()
+		data.append(line)
+print(data)
+```
+Output
+```
+Contents of the file
+```
+#10 First Class Functions and Destructuring Assignments
+```
+def shout(text:str):
+    print(text)
+def shouting(text:str):
+    print(text)
+yell,yelling = shout,shouting
+yell('Fri')
+yelling('State')
+```
+Output
+```
+Fri
+State
+```
+
+#11 Comprehensions, Lists and Destructuring Assignments
+```
+fruits : list = ["apple", "banana", "cherry", "kiwi", "mango"]
+days : list = ["Mon","Tues","Wed","Thurs","Fri"]
+newlist : list = []
+newlist1: list = []
+newlist,newlist1 = [x for x in fruits if "a" in x],[x for x in days if "T" in x]
+print(newlist)
+print(newlist1)
+```
+Output
+```
+["apple", "banana","mango"]
+["Tues","Thurs"]
+```
+#12 Multiple Inheritence
+```
+class Class1:
+    def m(self:Class1):
+        print("In Class1")
+       
+class Class2(Class1):
+    def m(self:Class2):
+        print("In Class2")
+ 
+class Class3(Class1):
+    def m(self:Class3):
+        print("In Class3") 
+        
+class Class4(Class2, Class3):
+    pass  
+     
+obj = Class4()
+obj.m()
+```
+Output 
+```
+In Class2
+```
+
+
+## Difficult Integrated test cases
+
 #### Test Case 1 ( I/O , Lists , For Loops , Strings)
 ```
 n: int = 0
@@ -246,6 +483,6 @@ True
 
 ## Changes we want to make
 #### changes in tests/
-- Add more integrated test cases
+- Add more integrated test cases 
 - Add tests on different os(macOS and windows)
-- Add automation testing for webApp(Use Selenium or other tools)
+- Currently Working on  automation testing for webApp(Use Selenium or other tools)
